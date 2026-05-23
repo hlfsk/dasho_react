@@ -1,18 +1,83 @@
-*, *::before, *::after {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
+/* ─── DESIGN TOKENS ─────────────────────────────────────────────── */
+:root {
+  /* Canvas */
+  --canvas-bg: #0c0c0e;
+  --canvas-dot: rgba(255,255,255,0.06);
+
+  /* Node anatomy */
+  --node-bg:        #141416;
+  --node-bg-hover:  #1a1a1d;
+  --node-border:    rgba(255,255,255,0.08);
+  --node-border-active: rgba(255,255,255,0.22);
+  --node-radius:    10px;
+  --node-shadow:    0 8px 32px rgba(0,0,0,0.6), 0 1px 0 rgba(255,255,255,0.04) inset;
+  --node-shadow-selected: 0 0 0 2px var(--accent), 0 8px 32px rgba(0,0,0,0.7);
+  --node-min-width: 210px;
+
+  /* Header per category */
+  --header-source:    #1c1c22;   /* источники */
+  --header-analyse:   #1a1c1a;   /* анализ */
+  --header-effect:    #1c1a1c;   /* эффекты */
+  --header-control:   #1a1a1c;   /* управление */
+  --header-output:    #1c1a18;   /* вывод */
+
+  /* Accent (selected node glow) */
+  --accent: #5b6ef5;
+
+  /* Socket / wire colors */
+  --socket-video:   #3d9eff;   /* синий */
+  --socket-audio:   #4ade80;   /* зелёный */
+  --socket-number:  #facc15;   /* жёлтый */
+  --socket-trigger: #f87171;   /* красный */
+  --socket-point:   #c084fc;   /* фиолетовый */
+  --socket-state:   #fb923c;   /* оранжевый */
+
+  /* Text */
+  --text-primary:   #f0f0f2;
+  --text-secondary: #8a8a9a;
+  --text-dim:       #555560;
+
+  /* Controls */
+  --ctrl-bg:        #0e0e11;
+  --ctrl-border:    rgba(255,255,255,0.10);
+  --ctrl-border-focus: rgba(255,255,255,0.28);
+  --ctrl-radius:    5px;
+
+  /* UI */
+  --font: 'Inter', 'SF Pro Display', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
 }
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 html, body, #root {
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-}
-
-body {
-  font-family: 'Inter', system-ui, sans-serif;
-  background: #0f0f0f;
-  color: #e0e0e0;
+  width: 100%; height: 100%; overflow: hidden;
+  background: var(--canvas-bg);
+  font-family: var(--font);
   -webkit-font-smoothing: antialiased;
 }
+
+/* React Flow overrides */
+.react-flow__renderer        { background: var(--canvas-bg); }
+.react-flow__background      { opacity: 1; }
+.react-flow__edge-path       { stroke-width: 1.5; }
+.react-flow__connection-path { stroke-width: 1.5; }
+
+/* Selection box */
+.react-flow__selection {
+  background: rgba(91,110,245,0.06);
+  border: 1px solid rgba(91,110,245,0.4);
+  border-radius: 4px;
+}
+
+/* Selected node ring */
+.react-flow__node.selected > .dasho-node {
+  border-color: var(--node-border-active);
+  box-shadow: var(--node-shadow-selected);
+}
+
+/* Scrollbar */
+::-webkit-scrollbar              { width: 4px; height: 4px; }
+::-webkit-scrollbar-track        { background: transparent; }
+::-webkit-scrollbar-thumb        { background: #333; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover  { background: #555; }

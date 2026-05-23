@@ -1,43 +1,76 @@
+/* ═══════════════════════════════════════════════════════════════════
+   DASHO NODE — base anatomy
+   All nodes use .dasho-node + .dasho-node__header + .dasho-node__body
+═══════════════════════════════════════════════════════════════════ */
+
 .dasho-node {
-  background: #1a1a1a;
-  border: 1px solid #333;
-  border-radius: 8px;
-  min-width: 200px;
-  font-family: 'Inter', system-ui, sans-serif;
+  background: var(--node-bg);
+  border: 1px solid var(--node-border);
+  border-radius: var(--node-radius);
+  min-width: var(--node-min-width);
+  font-family: var(--font);
   font-size: 12px;
-  color: #e0e0e0;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+  color: var(--text-primary);
+  box-shadow: var(--node-shadow);
+  transition: border-color 0.15s, box-shadow 0.15s;
+  user-select: none;
 }
 
+.dasho-node:hover {
+  background: var(--node-bg-hover);
+  border-color: rgba(255,255,255,0.13);
+}
+
+/* ── HEADER ─────────────────────────────────────────────────────── */
 .dasho-node__header {
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 8px 12px;
-  background: #222;
-  border-bottom: 1px solid #333;
-  border-radius: 8px 8px 0 0;
+  gap: 7px;
+  padding: 9px 12px 8px;
+  background: var(--header-source);
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  border-radius: var(--node-radius) var(--node-radius) 0 0;
 }
 
+/* category color overrides — add to parent node element */
+.dasho-node--source   .dasho-node__header { background: var(--header-source); }
+.dasho-node--analyse  .dasho-node__header { background: var(--header-analyse); }
+.dasho-node--effect   .dasho-node__header { background: var(--header-effect); }
+.dasho-node--control  .dasho-node__header { background: var(--header-control); }
+.dasho-node--output   .dasho-node__header { background: var(--header-output); }
+
 .dasho-node__icon {
-  font-size: 14px;
+  font-size: 15px;
   line-height: 1;
+  flex-shrink: 0;
 }
 
 .dasho-node__title {
   font-weight: 600;
-  font-size: 12px;
-  color: #fff;
-  letter-spacing: 0.02em;
+  font-size: 11.5px;
+  color: var(--text-primary);
+  letter-spacing: 0.03em;
+  flex: 1;
 }
 
+/* ── CATEGORY BADGE ─────────────────────────────────────────────── */
+.dasho-node__cat {
+  font-size: 9px;
+  font-weight: 500;
+  color: var(--text-dim);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* ── BODY ───────────────────────────────────────────────────────── */
 .dasho-node__body {
   padding: 10px 12px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 7px;
 }
 
+/* ── PARAM ROW ──────────────────────────────────────────────────── */
 .dasho-node__param {
   display: flex;
   align-items: center;
@@ -45,30 +78,185 @@
   gap: 8px;
 }
 
-.dasho-node__param label {
-  color: #888;
-  font-size: 11px;
+.dasho-node__param label,
+.dasho-node__label {
+  color: var(--text-secondary);
+  font-size: 10.5px;
   white-space: nowrap;
+  flex-shrink: 0;
 }
 
+/* ── SOCKET ROW (label next to handle) ──────────────────────────── */
+.dasho-node__socket-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 10px;
+  color: var(--text-dim);
+  position: relative;
+}
+
+.dasho-node__socket-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.dasho-node__socket-dot--video   { background: var(--socket-video); }
+.dasho-node__socket-dot--audio   { background: var(--socket-audio); }
+.dasho-node__socket-dot--number  { background: var(--socket-number); }
+.dasho-node__socket-dot--trigger { background: var(--socket-trigger); }
+.dasho-node__socket-dot--point   { background: var(--socket-point); }
+.dasho-node__socket-dot--state   { background: var(--socket-state); }
+
+/* ── DIVIDER ────────────────────────────────────────────────────── */
+.dasho-node__divider {
+  height: 1px;
+  background: rgba(255,255,255,0.05);
+  margin: 2px 0;
+}
+
+/* ── CONTROLS ───────────────────────────────────────────────────── */
 .dasho-node__input,
 .dasho-node__select {
-  background: #111;
-  border: 1px solid #444;
-  border-radius: 4px;
-  color: #e0e0e0;
+  background: var(--ctrl-bg);
+  border: 1px solid var(--ctrl-border);
+  border-radius: var(--ctrl-radius);
+  color: var(--text-primary);
+  font-family: var(--font);
   font-size: 11px;
-  padding: 3px 6px;
-  width: 120px;
+  padding: 4px 7px;
+  width: 118px;
   outline: none;
+  transition: border-color 0.12s;
 }
 
 .dasho-node__input:focus,
 .dasho-node__select:focus {
-  border-color: #666;
+  border-color: var(--ctrl-border-focus);
 }
 
-input[type='range'] {
-  width: 120px;
-  accent-color: #4ade80;
+.dasho-node__select option {
+  background: #1a1a1e;
 }
+
+/* range slider */
+input[type='range'].dasho-range {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 118px;
+  height: 3px;
+  background: #2a2a35;
+  border-radius: 3px;
+  outline: none;
+  cursor: pointer;
+}
+input[type='range'].dasho-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 13px; height: 13px;
+  border-radius: 50%;
+  background: var(--text-primary);
+  border: 2px solid #0c0c0e;
+  transition: transform 0.1s;
+}
+input[type='range'].dasho-range::-webkit-slider-thumb:hover { transform: scale(1.2); }
+
+/* number input (compact) */
+input[type='number'].dasho-number {
+  background: var(--ctrl-bg);
+  border: 1px solid var(--ctrl-border);
+  border-radius: var(--ctrl-radius);
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  padding: 3px 6px;
+  width: 60px;
+  outline: none;
+  text-align: right;
+}
+input[type='number'].dasho-number:focus { border-color: var(--ctrl-border-focus); }
+
+/* toggle checkbox */
+.dasho-toggle {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  font-size: 10.5px;
+  color: var(--text-secondary);
+}
+.dasho-toggle input[type='checkbox'] {
+  appearance: none; -webkit-appearance: none;
+  width: 28px; height: 15px;
+  background: #2a2a35;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.18s;
+  position: relative;
+  flex-shrink: 0;
+}
+.dasho-toggle input[type='checkbox']::after {
+  content: '';
+  position: absolute;
+  top: 2px; left: 2px;
+  width: 11px; height: 11px;
+  background: #666;
+  border-radius: 50%;
+  transition: transform 0.18s, background 0.18s;
+}
+.dasho-toggle input[type='checkbox']:checked { background: rgba(91,110,245,0.35); }
+.dasho-toggle input[type='checkbox']:checked::after {
+  transform: translateX(13px);
+  background: var(--accent);
+}
+
+/* button */
+.dasho-btn {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: 5px;
+  color: var(--text-secondary);
+  font-family: var(--font);
+  font-size: 10.5px;
+  padding: 4px 10px;
+  cursor: pointer;
+  transition: background 0.12s, color 0.12s, border-color 0.12s;
+  white-space: nowrap;
+}
+.dasho-btn:hover {
+  background: rgba(255,255,255,0.09);
+  color: var(--text-primary);
+  border-color: rgba(255,255,255,0.18);
+}
+.dasho-btn--primary {
+  background: rgba(91,110,245,0.2);
+  border-color: rgba(91,110,245,0.35);
+  color: #9aaaf8;
+}
+.dasho-btn--primary:hover {
+  background: rgba(91,110,245,0.3);
+  border-color: rgba(91,110,245,0.5);
+  color: #bbc5fb;
+}
+.dasho-btn--danger {
+  border-color: rgba(248,113,113,0.3);
+  color: #f87171;
+}
+.dasho-btn--danger:hover {
+  background: rgba(248,113,113,0.1);
+  border-color: rgba(248,113,113,0.5);
+}
+
+/* ── REACT FLOW HANDLES (sockets) ───────────────────────────────── */
+.react-flow__handle {
+  width: 10px !important;
+  height: 10px !important;
+  border-radius: 50% !important;
+  border: 2px solid var(--node-bg) !important;
+  transition: transform 0.12s, box-shadow 0.12s;
+}
+.react-flow__handle:hover {
+  transform: scale(1.35);
+  box-shadow: 0 0 0 3px rgba(255,255,255,0.12);
+}
+.react-flow__handle-left  { left:  -6px !important; }
+.react-flow__handle-right { right: -6px !important; }
