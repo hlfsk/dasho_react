@@ -1,11 +1,12 @@
 import { useCallback } from 'react'
-import { useReactFlow } from '@xyflow/react'
+import { useReactFlow, Panel } from '@xyflow/react'
 import './Palette.css'
 
 const NODE_CATALOG = [
   { type: 'camera',   icon: '📷', label: 'Камера' },
   { type: 'text',     icon: '🔤', label: 'Текст' },
   { type: 'gradient', icon: '🌈', label: 'Градиент' },
+  { type: 'mapping',  icon: '⇄',  label: 'Маппинг' },
 ]
 
 export default function Palette() {
@@ -22,18 +23,20 @@ export default function Palette() {
   }, [addNodes, screenToFlowPosition])
 
   return (
-    <aside className="palette">
-      <div className="palette__title">Ноды</div>
-      {NODE_CATALOG.map(({ type, icon, label }) => (
-        <button
-          key={type}
-          className="palette__item"
-          onClick={() => addNode(type, label)}
-        >
-          <span>{icon}</span>
-          <span>{label}</span>
-        </button>
-      ))}
-    </aside>
+    <Panel position="top-left">
+      <aside className="palette">
+        <div className="palette__title">Ноды</div>
+        {NODE_CATALOG.map(({ type, icon, label }) => (
+          <button
+            key={type}
+            className="palette__item"
+            onClick={() => addNode(type, label)}
+          >
+            <span>{icon}</span>
+            <span>{label}</span>
+          </button>
+        ))}
+      </aside>
+    </Panel>
   )
 }

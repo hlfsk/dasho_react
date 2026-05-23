@@ -1,10 +1,12 @@
 import { useCallback } from 'react'
 import {
-  useNodesState,
-  useEdgesState,
+  applyNodeChanges,
+  applyEdgeChanges,
   addEdge,
   type Node,
   type Edge,
+  type OnNodesChange,
+  type OnEdgesChange,
   type OnConnect,
 } from '@xyflow/react'
 import { create } from 'zustand'
@@ -13,19 +15,26 @@ import type { BaseNodeData } from '../types'
 interface PatchState {
   nodes: Node<BaseNodeData>[]
   edges: Edge[]
+  onNodesChange: OnNodesChange
+  onEdgesChange: OnEdgesChange
+  onConnect: OnConnect
   setNodes: (nodes: Node<BaseNodeData>[]) => void
   setEdges: (edges: Edge[]) => void
 }
 
-// Zustand store holds the serialisable patch state
-export const usePatchStore = () => {
-  const [nodes, setNodes, onNodesChange] = useNodesState<Node<BaseNodeData>>([])
-  const [edges, setEdges, onEdgesChange] = useEdgesState([])
+export const usePatchStore = create<PatchState>((set) => ({
+  nodes: [],
+  edges: [],
 
-  const onConnect: OnConnect = useCallback(
-    (connection) => setEdges((eds) => addEdge(connection, eds)),
-    [setEdges],
-  )
+  onNodesChange: (changes) =>
+    set((state) => ({ nodes: applyNodeChanges(changes, state.nodes) as Node<BaseNodeData>[] })),
 
-  return { nodes, edges, setNodes, setEdges, onNodesChange, onEdgesChange, onConnect }
-}
+  onEdgesChange: (changes) =>
+    set((state) => ({ edges: applyEdgeChanges(changes, state.edges) })),
+
+  onConnect: (connection) =>
+    set((state) => ({ edges: addEdge(connection, state.edges) })),
+
+  setNodes: (nodes) => set({ nodes }),
+  setEdges: (edges) => set({ edges }),
+}))
