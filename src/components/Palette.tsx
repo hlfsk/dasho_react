@@ -3,9 +3,9 @@ import { useReactFlow } from '@xyflow/react'
 import './Palette.css'
 
 const NODE_CATALOG = [
+  { type: 'camera',   icon: '📷', label: 'Камера' },
   { type: 'text',     icon: '🔤', label: 'Текст' },
   { type: 'gradient', icon: '🌈', label: 'Градиент' },
-  // Add more nodes here as they are ported
 ]
 
 export default function Palette() {
