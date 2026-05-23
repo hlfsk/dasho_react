@@ -1,0 +1,27 @@
+.app {
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+}
+
+/* Override React Flow defaults to match dark theme */
+.react-flow__background {
+  background: #0f0f0f;
+}
+
+.react-flow__controls button {
+  background: #1a1a1a;
+  border-color: #333;
+  color: #ccc;
+  fill: #ccc;
+}
+
+.react-flow__controls button:hover {
+  background: #252525;
+}
+
+.react-flow__minimap {
+  background: #1a1a1a;
+  border: 1px solid #333;
+  border-radius: 8px;
+}
