@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DÄSHO — прототип</title>
+<link href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@400,500,700,800,900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0e0e10;
+  --surface: #18181c;
+  --surface-2: #222228;
+  --surface-3: #2a2a32;
+  --border: rgba(255,255,255,0.08);
+  --text: #f0f0f5;
+  --text-muted: #888899;
+  --radius: 16px;
+  --radius-sm: 10px;
+  --cat-sources: #ff6b35;
+  --cat-fx: #7c5cfc;
+  --cat-output: #00d084;
+  --cat-control: #ffbe0b;
+  --cat-ai: #ff3cac;
+  --wire-video: #ff6b35;
+  --wire-audio: #7c5cfc;
+  --wire-data:  #ffbe0b;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: "Cabinet Grotesk", sans-serif; background: var(--bg); color: var(--text); height: 100vh; overflow: hidden; user-select: none; }
+.toolbar { position: fixed; top: 0; left: 0; right: 0; height: 52px; background: var(--surface); border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 12px; padding: 0 16px; z-index: 1000; }
+.app-logo { font-size: 18px; font-weight: 900; letter-spacing: -0.5px; color: var(--text); margin-right: 8px; }
+.app-logo span { color: var(--cat-sources); }
+.toolbar-btn { background: var(--surface-2); border: 1px solid var(--border); color: var(--text-muted); border-radius: var(--radius-sm); padding: 5px 12px; font-family: inherit; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 150ms ease; display: flex; align-items: center; gap: 5px; }
+.toolbar-btn:hover { background: var(--surface-3); color: var(--text); }
+.toolbar-btn.active { background: var(--cat-output); color: #000; border-color: transparent; }
+.spacer { flex: 1; }
+.status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--cat-output); box-shadow: 0 0 8px var(--cat-output); animation: pulse 2s ease-in-out infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+#canvas { position: fixed; top: 52px; left: 0; right: 0; bottom: 0; overflow: hidden; cursor: grab; background: radial-gradient(circle at 20% 20%, rgba(124,92,252,0.04) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(255,107,53,0.04) 0%, transparent 50%), var(--bg); }
+#canvas.grabbing { cursor: grabbing; }
+#canvas::before { content: ""; position: absolute; inset: 0; background-image: radial-gradient(circle, rgba(255,255,255,0.12) 1px, transparent 1px); background-size: 28px 28px; pointer-events: none; }
+#world { position: absolute; top: 0; left: 0; transform-origin: 0 0; }
+#wires-svg { position: absolute; top: 0; left: 0; width: 8000px; height: 8000px; pointer-events: none; overflow: visible; }
+.node { position: absolute; background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius); min-width: 200px; cursor: grab; transition: box-shadow 200ms ease, border-color 200ms ease; box-shadow: 0 4px 24px rgba(0,0,0,0.4); }
+.node:hover { border-color: rgba(255,255,255,0.18); box-shadow: 0 8px 40px rgba(0,0,0,0.6); }
+.node.dragging { cursor: grabbing; box-shadow: 0 16px 60px rgba(0,0,0,0.8); z-index: 100; }
+.node.selected { border-color: rgba(255,255,255,0.35); }
+.node-header { display: flex; align-items: center; gap: 8px; padding: 10px 12px 8px; border-bottom: 1px solid var(--border); cursor: grab; }
+.node-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+.node-title { flex: 1; font-size: 13px; font-weight: 800; letter-spacing: -0.2px; }
+.node-category { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; opacity: 0.6; }
+.node-body { padding: 10px 12px; display: flex; flex-direction: column; gap: 6px; }
+.node-preview { border-radius: 8px; overflow: hidden; background: #000; aspect-ratio: 16/9; width: 100%; position: relative; display: flex; align-items: center; justify-content: center; }
+.preview-placeholder { display: flex; flex-direction: column; align-items: center; gap: 4px; opacity: 0.35; font-size: 11px; font-weight: 600; }
+.preview-start-btn { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.3); cursor: pointer; transition: background 150ms ease; }
+.preview-start-btn:hover { background: rgba(0,0,0,0.1); }
+.play-circle { width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,0.15); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; font-size: 16px; transition: transform 150ms ease; }
+.preview-start-btn:hover .play-circle { transform: scale(1.1); }
+.param-row { display: flex; align-items: center; gap: 8px; }
+.param-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); flex-shrink: 0; min-width: 52px; }
+.param-select { flex: 1; background: var(--surface-2); border: 1px solid var(--border); border-radius: 7px; color: var(--text); font-family: inherit; font-size: 11px; font-weight: 600; padding: 4px 8px; cursor: pointer; outline: none; }
+.param-slider-wrap { flex: 1; display: flex; align-items: center; gap: 6px; }
+.param-slider { flex: 1; height: 3px; border-radius: 2px; appearance: none; -webkit-appearance: none; cursor: pointer; outline: none; }
+.param-slider::-webkit-slider-thumb { -webkit-appearance: none; width: 14px; height: 14px; border-radius: 50%; background: var(--text); cursor: grab; border: 2px solid var(--bg); box-shadow: 0 1px 4px rgba(0,0,0,0.4); }
+.param-value { font-size: 10px; font-weight: 700; color: var(--text-muted); min-width: 26px; text-align: right; }
+.node-status { font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; padding: 2px 7px; border-radius: 100px; display: inline-flex; align-items: center; gap: 4px; }
+.status-idle { background: rgba(255,255,255,0.06); color: var(--text-muted); }
+.status-live { background: rgba(0,208,132,0.15); color: var(--cat-output); }
+.status-live::before { content:""; width:5px;height:5px;border-radius:50%;background:var(--cat-output);animation:pulse 1.5s ease infinite; }
+.mapper-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 4px; }
+.mapper-surface { aspect-ratio: 1; background: var(--surface-3); border-radius: 6px; border: 1.5px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 700; color: var(--text-muted); cursor: pointer; transition: all 150ms ease; }
+.mapper-surface:hover { border-color: rgba(255,255,255,0.3); color: var(--text); }
+.mapper-surface.active { border-color: var(--cat-fx); background: rgba(124,92,252,0.15); color: var(--cat-fx); }
+.output-screen { border-radius: 8px; overflow: hidden; background: #000; aspect-ratio: 16/9; position: relative; border: 1.5px solid rgba(0,208,132,0.3); box-shadow: 0 0 20px rgba(0,208,132,0.1); }
+.output-screen-inner { width: 100%; height: 100%; background: linear-gradient(135deg, #1a0a2e 0%, #0d0d20 50%, #001a10 100%); display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; color: rgba(0,208,132,0.4); text-transform: uppercase; letter-spacing: 0.1em; }
+.output-resolution { font-size: 9px; font-weight: 700; color: var(--text-muted); display: flex; justify-content: space-between; }
+.sockets-in, .sockets-out { display: flex; flex-direction: column; gap: 4px; padding: 0 0 8px; }
+.socket-row { display: flex; align-items: center; gap: 6px; padding: 0 12px; position: relative; }
+.socket-row.out { justify-content: flex-end; }
+.socket { width: 12px; height: 12px; border-radius: 50%; border: 2px solid; flex-shrink: 0; cursor: crosshair; transition: transform 150ms ease; }
+.socket:hover { transform: scale(1.4); }
+.socket.video { border-color: var(--wire-video); background: rgba(255,107,53,0.2); }
+.socket.audio { border-color: var(--wire-audio); background: rgba(124,92,252,0.2); }
+.socket.data  { border-color: var(--wire-data);  background: rgba(255,190,11,0.2); }
+.socket.connected { background: currentColor; }
+.socket-row:not(.out) .socket { margin-left: -18px; }
+.socket-row.out .socket { margin-right: -18px; }
+.socket-label { font-size: 10px; font-weight: 700; color: var(--text-muted); }
+.fx-list { display: flex; flex-direction: column; gap: 4px; }
+.fx-item { display: flex; align-items: center; gap: 8px; background: var(--surface-2); border-radius: 8px; padding: 6px 10px; cursor: pointer; transition: background 150ms ease; border: 1px solid var(--border); }
+.fx-item:hover { background: var(--surface-3); }
+.fx-item.on { border-color: rgba(124,92,252,0.5); }
+.fx-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.fx-name { font-size: 11px; font-weight: 700; flex: 1; }
+.fx-toggle { width: 28px; height: 16px; border-radius: 100px; background: var(--surface-3); border: 1px solid var(--border); position: relative; transition: background 150ms ease; cursor: pointer; }
+.fx-toggle.on { background: var(--cat-fx); border-color: transparent; }
+.fx-toggle::after { content:""; position:absolute; top:2px; left:2px; width:10px;height:10px; border-radius:50%; background:#fff; transition: transform 150ms ease; }
+.fx-toggle.on::after { transform: translateX(12px); }
+.palette { position: fixed; left: 12px; top: 64px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 10px 8px; display: flex; flex-direction: column; gap: 4px; z-index: 500; width: 56px; }
+.palette-btn { width: 40px; height: 40px; border-radius: var(--radius-sm); background: var(--surface-2); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 18px; cursor: pointer; transition: all 150ms ease; position: relative; }
+.palette-btn:hover { background: var(--surface-3); transform: scale(1.05); }
+.palette-tooltip { position: absolute; left: calc(100% + 8px); top: 50%; transform: translateY(-50%); background: var(--surface-3); border: 1px solid var(--border); border-radius: 8px; padding: 4px 8px; font-size: 11px; font-weight: 700; white-space: nowrap; pointer-events: none; opacity: 0; transition: opacity 100ms ease; }
+.palette-btn:hover .palette-tooltip { opacity: 1; }
+.hint { position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%); background: var(--surface); border: 1px solid var(--border); border-radius: 100px; padding: 6px 16px; font-size: 11px; font-weight: 600; color: var(--text-muted); pointer-events: none; z-index: 500; }
+</style>
+</head>
+<body>
+<div class="toolbar">
+  <div class="app-logo">DÄ<span>SHO</span></div>
+  <button class="toolbar-btn">💾 Сохранить</button>
+  <button class="toolbar-btn">↺ Сброс</button>
+  <div class="spacer"></div>
+  <div class="status-dot"></div>
+  <span style="font-size:11px;font-weight:700;color:var(--text-muted)">Патч активен</span>
+  <button class="toolbar-btn active">⬛ На проектор</button>
+</div>
+
+<div class="palette">
+  <div class="palette-btn">📷<div class="palette-tooltip">Источники</div></div>
+  <div class="palette-btn">✨<div class="palette-tooltip">Эффекты</div></div>
+  <div class="palette-btn">🖥️<div class="palette-tooltip">Вывод</div></div>
+  <div class="palette-btn">🎛️<div class="palette-tooltip">Управление</div></div>
+  <div class="palette-btn" style="margin-top:8px;border-style:dashed;font-size:22px;color:var(--text-muted)">+<div class="palette-tooltip">Добавить ноду</div></div>
+</div>
+
+<div id="canvas">
+  <div id="world">
+    <svg id="wires-svg"></svg>
+
+    <!-- CAMERA -->
+    <div class="node" id="n-camera" style="left:110px;top:80px;width:220px">
+      <div class="node-header">
+        <div class="node-icon" style="background:rgba(255,107,53,0.15);color:var(--cat-sources)">📷</div>
+        <div><div class="node-title">Камера</div><div class="node-category" style="color:var(--cat-sources)">источник</div></div>
+        <div class="node-status status-idle" id="cam-status">выкл</div>
+      </div>
+      <div class="node-body">
+        <div class="node-preview" id="cam-preview">
+          <div class="preview-placeholder"><div style="font-size:28px">📷</div><div>нажми чтобы включить</div></div>
+          <div class="preview-start-btn" id="cam-btn"><div class="play-circle">▶</div></div>
+        </div>
+        <div class="param-row">
+          <span class="param-label">зеркало</span>
+          <select class="param-select"><option>да</option><option>нет</option></select>
+        </div>
+        <div class="param-row">
+          <span class="param-label">яркость</span>
+          <div class="param-slider-wrap">
+            <input type="range" class="param-slider" id="sl-bright" min="0" max="100" value="80" style="background:linear-gradient(to right,var(--cat-sources) 80%,var(--surface-3) 80%)">
+            <span class="param-value" id="vl-bright">80</span>
+          </div>
+        </div>
+      </div>
+      <div class="sockets-out">
+        <div class="socket-row out"><span class="socket-label">видео</span><div class="socket video connected" id="s-cam-out"></div></div>
+      </div>
+    </div>
+
+    <!-- FX -->
+    <div class="node" id="n-fx" style="left:390px;top:60px;width:210px">
+      <div class="node-header">
+        <div class="node-icon" style="background:rgba(124,92,252,0.15);color:var(--cat-fx)">✨</div>
+        <div><div class="node-title">Эффекты</div><div class="node-category" style="color:var(--cat-fx)">обработка</div></div>
+      </div>
+      <div class="node-body">
+        <div class="fx-list">
+          <div class="fx-item on"><div class="fx-dot" style="background:var(--cat-fx)"></div><span class="fx-name">Глич</span><div class="fx-toggle on" onclick="toggle(this)"></div></div>
+          <div class="fx-item"><div class="fx-dot" style="background:#ff3cac"></div><span class="fx-name">Зеркало</span><div class="fx-toggle" onclick="toggle(this)"></div></div>
+          <div class="fx-item"><div class="fx-dot" style="background:#00d084"></div><span class="fx-name">Пиксели</span><div class="fx-toggle" onclick="toggle(this)"></div></div>
+          <div class="fx-item"><div class="fx-dot" style="background:#ffbe0b"></div><span class="fx-name">Радуга</span><div class="fx-toggle" onclick="toggle(this)"></div></div>
+        </div>
+        <div class="param-row" style="margin-top:2px">
+          <span class="param-label">сила</span>
+          <div class="param-slider-wrap">
+            <input type="range" class="param-slider" id="sl-fx" min="0" max="100" value="60" style="background:linear-gradient(to right,var(--cat-fx) 60%,var(--surface-3) 60%)">
+            <span class="param-value" id="vl-fx">60</span>
+          </div>
+        </div>
+      </div>
+      <div class="sockets-in"><div class="socket-row"><div class="socket video connected" id="s-fx-in"></div><span class="socket-label">видео</span></div></div>
+      <div class="sockets-out"><div class="socket-row out"><span class="socket-label">видео</span><div class="socket video connected" id="s-fx-out"></div></div></div>
+    </div>
+
+    <!-- MAPPER -->
+    <div class="node" id="n-mapper" style="left:390px;top:310px;width:210px">
+      <div class="node-header">
+        <div class="node-icon" style="background:rgba(255,190,11,0.15);color:var(--cat-control)">🔲</div>
+        <div><div class="node-title">На поверхность</div><div class="node-category" style="color:var(--cat-control)">проекция</div></div>
+      </div>
+      <div class="node-body">
+        <div style="font-size:10px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em">Поверхности</div>
+        <div class="mapper-grid">
+          <div class="mapper-surface active" onclick="selectSurf(this)">A</div>
+          <div class="mapper-surface" onclick="selectSurf(this)">B</div>
+          <div class="mapper-surface" onclick="selectSurf(this)">C</div>
+          <div class="mapper-surface" onclick="selectSurf(this)">D</div>
+          <div class="mapper-surface" onclick="selectSurf(this)">E</div>
+          <div class="mapper-surface" style="font-size:14px;color:rgba(255,255,255,0.3)">+</div>
+        </div>
+        <div class="param-row">
+          <span class="param-label">форма</span>
+          <select class="param-select"><option>прямоугольник</option><option>трапеция</option><option>треугольник</option></select>
+        </div>
+      </div>
+      <div class="sockets-in"><div class="socket-row"><div class="socket video connected" id="s-map-in"></div><span class="socket-label">видео</span></div></div>
+      <div class="sockets-out"><div class="socket-row out"><span class="socket-label">поток</span><div class="socket video connected" id="s-map-out"></div></div></div>
+    </div>
+
+    <!-- OUTPUT -->
+    <div class="node" id="n-output" style="left:660px;top:175px;width:220px">
+      <div class="node-header">
+        <div class="node-icon" style="background:rgba(0,208,132,0.15);color:var(--cat-output)">🖥️</div>
+        <div><div class="node-title">Проектор</div><div class="node-category" style="color:var(--cat-output)">вывод</div></div>
+        <div class="node-status status-live">живой</div>
+      </div>
+      <div class="node-body">
+        <div class="output-screen"><div class="output-screen-inner" id="out-inner">ожидание сигнала</div></div>
+        <div class="output-resolution"><span>1920 × 1080</span><span>60 fps</span></div>
+        <div class="param-row">
+          <span class="param-label">экран</span>
+          <select class="param-select"><option>Внешний дисплей 1</option><option>Встроенный экран</option></select>
+        </div>
+      </div>
+      <div class="sockets-in"><div class="socket-row"><div class="socket video connected" id="s-out-in"></div><span class="socket-label">поток</span></div></div>
+    </div>
+
+    <!-- MIC -->
+    <div class="node" id="n-mic" style="left:110px;top:360px;width:200px">
+      <div class="node-header">
+        <div class="node-icon" style="background:rgba(255,60,172,0.15);color:var(--cat-ai)">🎤</div>
+        <div><div class="node-title">Микрофон</div><div class="node-category" style="color:var(--cat-ai)">источник</div></div>
+      </div>
+      <div class="node-body">
+        <div style="display:flex;gap:3px;align-items:flex-end;height:40px;background:var(--surface-2);border-radius:8px;padding:6px 8px;" id="audio-bars"></div>
+        <div class="param-row">
+          <span class="param-label">чувств.</span>
+          <div class="param-slider-wrap">
+            <input type="range" class="param-slider" min="0" max="100" value="70" style="background:linear-gradient(to right,var(--cat-ai) 70%,var(--surface-3) 70%)">
+            <span class="param-value">70</span>
+          </div>
+        </div>
+      </div>
+      <div class="sockets-out">
+        <div class="socket-row out"><span class="socket-label">аудио</span><div class="socket audio connected" id="s-mic-a"></div></div>
+        <div class="socket-row out"><span class="socket-label">уровень</span><div class="socket data connected" id="s-mic-d"></div></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="hint">🖱 тяни ноды за заголовок · колёсиком — зум · пробел+тяни — перемещение холста</div>
+
+<script>
+const world = document.getElementById("world");
+const canvas = document.getElementById("canvas");
+const svg = document.getElementById("wires-svg");
+const st = { scale:1, ox:0, oy:0, drag:null, pan:null, space:false };
+
+const WIRES = [
+  {f:"s-cam-out", t:"s-fx-in",  c:"#ff6b35"},
+  {f:"s-fx-out",  t:"s-out-in", c:"#ff6b35"},
+  {f:"s-map-out", t:"s-out-in", c:"#ff6b35"},
+  {f:"s-cam-out", t:"s-map-in", c:"#ff6b35"},
+  {f:"s-mic-d",   t:"s-fx-in",  c:"#ffbe0b"},
+];
+
+function pos(id){
+  const el=document.getElementById(id);
+  if(!el)return null;
+  const r=el.getBoundingClientRect(), cr=canvas.getBoundingClientRect();
+  return {x:(r.left+r.width/2-cr.left-st.ox)/st.scale, y:(r.top+r.height/2-cr.top-st.oy)/st.scale};
+}
+
+function curve(x1,y1,x2,y2){const d=Math.abs(x2-x1)*0.55;return `M${x1},${y1} C${x1+d},${y1} ${x2-d},${y2} ${x2},${y2}`;}
+
+function draw(){
+  svg.innerHTML="";
+  WIRES.forEach(w=>{
+    const a=pos(w.f),b=pos(w.t);if(!a||!b)return;
+    const g=document.createElementNS("http://www.w3.org/2000/svg","path");
+    g.setAttribute("d",curve(a.x,a.y,b.x,b.y));g.setAttribute("stroke",w.c);
+    g.setAttribute("stroke-width","6");g.setAttribute("fill","none");g.setAttribute("opacity","0.15");svg.appendChild(g);
+    const p=document.createElementNS("http://www.w3.org/2000/svg","path");
+    p.setAttribute("d",curve(a.x,a.y,b.x,b.y));p.setAttribute("stroke",w.c);
+    p.setAttribute("stroke-width","2.5");p.setAttribute("fill","none");p.setAttribute("stroke-linecap","round");svg.appendChild(p);
+  });
+}
+
+function applyT(){ world.style.transform=`translate(${st.ox}px,${st.oy}px) scale(${st.scale})`; draw(); }
+
+document.querySelectorAll(".node").forEach(n=>{
+  n.querySelector(".node-header").addEventListener("mousedown",e=>{
+    if(e.button!==0)return; e.stopPropagation();
+    st.drag={node:n,sx:e.clientX,sy:e.clientY,ol:parseInt(n.style.left),ot:parseInt(n.style.top)};
+    n.classList.add("dragging");
+    document.querySelectorAll(".node").forEach(x=>x.classList.remove("selected"));
+    n.classList.add("selected");
+  });
+});
+
+document.addEventListener("keydown",e=>{if(e.code==="Space"){st.space=true;canvas.style.cursor="grab";}});
+document.addEventListener("keyup",e=>{if(e.code==="Space"){st.space=false;canvas.style.cursor="";}});
+
+canvas.addEventListener("mousedown",e=>{
+  if(e.button!==0)return;
+  if(st.space||e.target===canvas||e.target===world||e.target===svg){
+    st.pan={x:e.clientX-st.ox,y:e.clientY-st.oy};canvas.classList.add("grabbing");
+  }
+});
+
+document.addEventListener("mousemove",e=>{
+  if(st.drag){const d=st.drag,dx=(e.clientX-d.sx)/st.scale,dy=(e.clientY-d.sy)/st.scale;d.node.style.left=(d.ol+dx)+"px";d.node.style.top=(d.ot+dy)+"px";draw();}
+  if(st.pan){st.ox=e.clientX-st.pan.x;st.oy=e.clientY-st.pan.y;applyT();}
+});
+
+document.addEventListener("mouseup",()=>{
+  if(st.drag){st.drag.node.classList.remove("dragging");st.drag=null;}
+  st.pan=null;canvas.classList.remove("grabbing");
+});
+
+canvas.addEventListener("wheel",e=>{
+  e.preventDefault();
+  const s=e.deltaY>0?0.9:1.1,ns=Math.min(2.5,Math.max(0.3,st.scale*s));
+  const r=canvas.getBoundingClientRect(),mx=e.clientX-r.left,my=e.clientY-r.top;
+  st.ox=mx-(mx-st.ox)*(ns/st.scale);st.oy=my-(my-st.oy)*(ns/st.scale);st.scale=ns;applyT();
+},{passive:false});
+
+document.getElementById("sl-bright").addEventListener("input",function(){document.getElementById("vl-bright").textContent=this.value;this.style.background=`linear-gradient(to right,var(--cat-sources) ${this.value}%,var(--surface-3) ${this.value}%)`;});
+document.getElementById("sl-fx").addEventListener("input",function(){document.getElementById("vl-fx").textContent=this.value;this.style.background=`linear-gradient(to right,var(--cat-fx) ${this.value}%,var(--surface-3) ${this.value}%)`;});
+
+function toggle(t){t.classList.toggle("on");t.closest(".fx-item").classList.toggle("on");}
+function selectSurf(s){document.querySelectorAll(".mapper-surface").forEach(x=>x.classList.remove("active"));s.classList.add("active");}
+
+// Audio bars
+const bars=document.getElementById("audio-bars");
+for(let i=0;i<20;i++){const b=document.createElement("div");b.style.cssText="flex:1;background:var(--cat-ai);border-radius:2px;height:4px;opacity:0.7;transition:height 80ms ease";bars.appendChild(b);}
+setInterval(()=>{Array.from(bars.children).forEach(b=>{const h=4+Math.random()*24;b.style.height=h+"px";b.style.opacity=0.4+h/35;});},100);
+
+// Camera
+document.getElementById("cam-btn").addEventListener("click",async()=>{
+  try{
+    const stream=await navigator.mediaDevices.getUserMedia({video:true,audio:false});
+    const v=document.createElement("video");v.srcObject=stream;v.autoplay=true;v.muted=true;v.playsInline=true;
+    v.style.cssText="width:100%;height:100%;object-fit:cover;border-radius:8px;transform:scaleX(-1)";
+    const p=document.getElementById("cam-preview");p.innerHTML="";p.appendChild(v);await v.play();
+    const s=document.getElementById("cam-status");s.className="node-status status-live";s.textContent="live";
+    const o=document.getElementById("out-inner");o.textContent="● сигнал идёт";o.style.color="var(--cat-output)";
+  }catch(e){document.getElementById("cam-preview").innerHTML="<div class='preview-placeholder'><div style='font-size:22px'>🚫</div><div>нет доступа к камере</div></div>";}
+});
+
+st.ox=80; st.oy=20; applyT();
+requestAnimationFrame(()=>requestAnimationFrame(draw));
+window.addEventListener("resize",draw);
+</script>
+</body>
+</html>

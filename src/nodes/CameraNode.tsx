@@ -78,41 +78,58 @@ export default function CameraNode({ id, data }: NodeProps) {
   useEffect(() => () => stopStream(), [stopStream])
 
   return (
-    <div className="dasho-node dasho-node--source">
+    <div className="dasho-node">
       <div className="dasho-node__header">
-        <span className="dasho-node__icon">📷</span>
-        <span className="dasho-node__title">{label}</span>
-        <span className="dasho-node__cat">Источник</span>
-        {status === 'live' && <span className="camera-node__badge">● LIVE</span>}
+        <div className="dasho-node__icon" style={{ background: 'rgba(255,107,53,0.15)', color: 'var(--cat-sources)' }}>📷</div>
+        <div className="dasho-node__title-group">
+          <div className="dasho-node__title">{label}</div>
+          <div className="dasho-node__cat" style={{ color: 'var(--cat-sources)' }}>источник</div>
+        </div>
+        <div className={`dasho-node__status status-${status === 'live' ? 'live' : 'idle'}`}>
+          {status === 'live' ? 'live' : 'выкл'}
+        </div>
       </div>
 
       <div className="dasho-node__body">
         {/* Превью */}
-        <div className="camera-node__preview">
+        <div className="camera-node__preview" onClick={() => {
+          if (status !== 'live') startCamera(deviceId || undefined)
+        }}>
           <video
             ref={videoRef} playsInline muted autoPlay
             className="camera-node__video"
-            style={{ display: mirror ? 'none' : 'block' }}
+            style={{ display: mirror && status === 'live' ? 'none' : status === 'live' ? 'block' : 'none' }}
           />
           <canvas
             ref={canvasRef}
             className="camera-node__video"
-            style={{ display: mirror ? 'block' : 'none' }}
+            style={{ display: mirror && status === 'live' ? 'block' : 'none' }}
           />
           {status !== 'live' && (
             <div className="camera-node__placeholder">
-              {status === 'idle' && '📷'}
-              {status === 'connecting' && '⏳'}
-              {status === 'error' && '✗'}
+              <div style={{ fontSize: 28 }}>📷</div>
+              <div>нажми чтобы включить</div>
+            </div>
+          )}
+          {status !== 'live' && (
+            <div className="camera-node__start-btn">
+              <div className="play-circle">▶</div>
             </div>
           )}
         </div>
 
-        <div className="dasho-node__divider" />
+        {/* Зеркало */}
+        <div className="dasho-node__param">
+          <span className="dasho-node__label">зеркало</span>
+          <select className="dasho-node__select" value={mirror ? 'да' : 'нет'} onChange={e => setMirror(e.target.value === 'да')}>
+            <option value="да">да</option>
+            <option value="нет">нет</option>
+          </select>
+        </div>
 
         {/* Устройство */}
         <div className="dasho-node__param">
-          <label>Устройство</label>
+          <span className="dasho-node__label">камера</span>
           <select
             className="dasho-node__select"
             value={deviceId}
@@ -122,7 +139,7 @@ export default function CameraNode({ id, data }: NodeProps) {
               if (status === 'live') startCamera(v || undefined)
             }}
           >
-            <option value="">— по умолчанию —</option>
+            <option value="">по умолчанию</option>
             {devices.map(d => (
               <option key={d.deviceId} value={d.deviceId}>
                 {d.label || `Камера ${d.deviceId.slice(0, 6)}`}
@@ -130,38 +147,20 @@ export default function CameraNode({ id, data }: NodeProps) {
             ))}
           </select>
         </div>
-
-        {/* Зеркало */}
-        <div className="dasho-node__param">
-          <label>Зеркало</label>
-          <label className="dasho-toggle">
-            <input
-              type="checkbox" checked={mirror}
-              onChange={e => setMirror(e.target.checked)}
-            />
-            <span>{mirror ? 'вкл' : 'выкл'}</span>
-          </label>
-        </div>
-
-        <div className="dasho-node__divider" />
-
-        {/* Статус + кнопка */}
-        <div className="camera-node__footer">
-          <span className="camera-node__status" data-status={status}>
-            {status === 'idle'       && 'не запущена'}
-            {status === 'connecting' && 'подключаюсь…'}
-            {status === 'live'       && 'идёт ✓'}
-            {status === 'error'      && `ошибка: ${errorMsg}`}
-          </span>
-          {status !== 'live'
-            ? <button className="dasho-btn dasho-btn--primary" onClick={() => startCamera(deviceId || undefined)}>▶ Включить</button>
-            : <button className="dasho-btn dasho-btn--danger"  onClick={() => { stopStream(); setStatus('idle') }}>■ Стоп</button>
-          }
-        </div>
+        
+        {status === 'live' && (
+          <div style={{ display: 'flex', justifyContent: 'center', marginTop: 4 }}>
+            <button className="dasho-btn" onClick={() => { stopStream(); setStatus('idle') }}>■ Стоп</button>
+          </div>
+        )}
       </div>
 
-      <Handle type="source" position={Position.Right} id="video"
-        style={{ background: SOCKET_COLORS.video }} />
+      <div className="dasho-node__socket-row out" style={{ paddingBottom: 8 }}>
+        <span className="dasho-node__socket-label">видео</span>
+        <Handle type="source" position={Position.Right} id="video"
+          style={{ background: 'rgba(255,107,53,0.2)', borderColor: 'var(--wire-video)' }} />
+      </div>
     </div>
   )
 }
+

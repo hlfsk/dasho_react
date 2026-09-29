@@ -10,7 +10,7 @@ function FlowCanvas() {
   const { nodes, edges, onNodesChange, onEdgesChange, onConnect } = usePatchStore()
 
   return (
-    <div style={{ width: '100vw', height: '100vh' }}>
+    <div className="dasho-canvas-wrap">
       <ReactFlow
         nodes={nodes}
         edges={edges}
@@ -22,19 +22,31 @@ function FlowCanvas() {
         deleteKeyCode="Delete"
         proOptions={{ hideAttribution: true }}
       >
-        <Background variant={BackgroundVariant.Dots} gap={24} size={1} color="var(--canvas-dot)" />
+        <Background variant={BackgroundVariant.Dots} gap={28} size={2} color="rgba(255,255,255,0.12)" />
         <Controls />
         <MiniMap nodeStrokeWidth={3} />
         <Palette />
       </ReactFlow>
+      <div className="hint">🖱 тяни ноды за заголовок · колёсиком — зум · пробел+тяни — перемещение холста</div>
     </div>
   )
 }
 
 export default function App() {
   return (
-    <ReactFlowProvider>
-      <FlowCanvas />
-    </ReactFlowProvider>
+    <div className="dasho-app">
+      <div className="toolbar">
+        <div className="app-logo">DÄ<span>SHO</span></div>
+        <button className="toolbar-btn">💾 Сохранить</button>
+        <button className="toolbar-btn">↺ Сброс</button>
+        <div className="spacer"></div>
+        <div className="status-dot"></div>
+        <span style={{ fontSize: '11px', fontWeight: 700, color: 'var(--text-muted)' }}>Патч активен</span>
+        <button className="toolbar-btn active">⬛ На проектор</button>
+      </div>
+      <ReactFlowProvider>
+        <FlowCanvas />
+      </ReactFlowProvider>
+    </div>
   )
 }

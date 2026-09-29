@@ -90,29 +90,27 @@ export default function OutputNode({ id, data }: NodeProps) {
   }, [])
 
   return (
-    <div className="dasho-node dasho-node--output">
+    <div className="dasho-node">
       <div className="dasho-node__header">
-        <span className="dasho-node__icon">📺</span>
-        <span className="dasho-node__title">{label}</span>
-        <span className="dasho-node__cat">Вывод</span>
-        {hasSignal && <span className="output-node__badge">●</span>}
+        <div className="dasho-node__icon" style={{ background: 'rgba(0,208,132,0.15)', color: 'var(--cat-output)' }}>🖥️</div>
+        <div className="dasho-node__title-group">
+          <div className="dasho-node__title">{label}</div>
+          <div className="dasho-node__cat" style={{ color: 'var(--cat-output)' }}>вывод</div>
+        </div>
+        {hasSignal && <div className="dasho-node__status status-live">живой</div>}
       </div>
 
       <div className="dasho-node__body">
         {/* Превью */}
         <div className="output-node__preview" ref={containerRef}>
-          <canvas ref={canvasRef} className="output-node__canvas" />
+          <div className="output-screen-inner" style={{ opacity: hasSignal ? 0 : 1 }}>
+            ожидание сигнала
+          </div>
+          <canvas ref={canvasRef} className="output-node__canvas" style={{ opacity: hasSignal ? 1 : 0 }} />
 
           {/* Полноэкранный canvas поверх превью внутри fullscreen-контейнера */}
           {isFullscreen && (
             <canvas ref={fullCanvasRef} className="output-node__fullcanvas" />
-          )}
-
-          {!hasSignal && (
-            <div className="output-node__placeholder">
-              <span>📺</span>
-              <span>Нет сигнала</span>
-            </div>
           )}
 
           {isFullscreen && (
@@ -121,29 +119,36 @@ export default function OutputNode({ id, data }: NodeProps) {
             </button>
           )}
         </div>
-
-        <div className="dasho-node__divider" />
-
-        {/* Вход сигнала */}
-        <div className="dasho-node__socket-row">
-          <span className="dasho-node__socket-dot dasho-node__socket-dot--video" />
-          <span>Видео</span>
+        
+        <div className="output-resolution">
+          <span>1920 × 1080</span>
+          <span>60 fps</span>
         </div>
 
-        <div className="dasho-node__divider" />
+        <div className="dasho-node__param">
+          <span className="dasho-node__label">экран</span>
+          <select className="dasho-node__select">
+            <option>Внешний дисплей 1</option>
+            <option>Встроенный экран</option>
+          </select>
+        </div>
 
-        {/* Кнопка */}
         <button
-          className={`dasho-btn dasho-btn--primary output-node__fs-btn${isFullscreen ? ' output-node__fs-btn--active' : ''}`}
+          className="dasho-btn"
           onClick={isFullscreen ? exitFullscreen : openFullscreen}
+          style={{ marginTop: 4, textAlign: 'center' }}
         >
           {isFullscreen ? '✕ Выйти из экрана' : '⛶ На весь экран'}
         </button>
       </div>
 
-      {/* Только вход */}
-      <Handle type="target" position={Position.Left} id="video"
-        style={{ background: SOCKET_COLORS.video }} />
+      {/* Вход */}
+      <div className="dasho-node__socket-row" style={{ paddingBottom: 8 }}>
+        <Handle type="target" position={Position.Left} id="video"
+          style={{ background: 'rgba(255,107,53,0.2)', borderColor: 'var(--wire-video)' }} />
+        <span className="dasho-node__socket-label">поток</span>
+      </div>
     </div>
   )
 }
+

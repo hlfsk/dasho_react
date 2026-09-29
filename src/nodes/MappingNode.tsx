@@ -54,65 +54,49 @@ export default function MappingNode({ id, data }: NodeProps) {
   }, [id, sourceEdge, inMin, inMax, outMin, outMax, invert, clamp])
 
   return (
-    <div className="dasho-node dasho-node--control">
+    <div className="dasho-node" style={{ width: 210 }}>
       <div className="dasho-node__header">
-        <span className="dasho-node__icon">⇄</span>
-        <span className="dasho-node__title">{label}</span>
-        <span className="dasho-node__cat">Управление</span>
+        <div className="dasho-node__icon" style={{ background: 'rgba(255,190,11,0.15)', color: 'var(--cat-control)' }}>🔲</div>
+        <div className="dasho-node__title-group">
+          <div className="dasho-node__title">{label}</div>
+          <div className="dasho-node__cat" style={{ color: 'var(--cat-control)' }}>проекция</div>
+        </div>
       </div>
 
       <div className="dasho-node__body">
-        {/* Вход */}
-        <div className="dasho-node__socket-row">
-          <span className="dasho-node__socket-dot dasho-node__socket-dot--number" />
-          <span>Значение</span>
+        <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Поверхности</div>
+        
+        {/* Mocked mapper grid from prototype */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 4 }}>
+          <div style={{ aspectRatio: '1', background: 'rgba(124,92,252,0.15)', borderRadius: 6, border: '1.5px solid var(--cat-fx)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, fontWeight: 700, color: 'var(--cat-fx)' }}>A</div>
+          <div style={{ aspectRatio: '1', background: 'var(--surface-3)', borderRadius: 6, border: '1.5px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, fontWeight: 700, color: 'var(--text-muted)' }}>B</div>
+          <div style={{ aspectRatio: '1', background: 'var(--surface-3)', borderRadius: 6, border: '1.5px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, fontWeight: 700, color: 'var(--text-muted)' }}>C</div>
+          <div style={{ aspectRatio: '1', background: 'var(--surface-3)', borderRadius: 6, border: '1.5px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, fontWeight: 700, color: 'var(--text-muted)' }}>D</div>
+          <div style={{ aspectRatio: '1', background: 'var(--surface-3)', borderRadius: 6, border: '1.5px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, fontWeight: 700, color: 'var(--text-muted)' }}>E</div>
+          <div style={{ aspectRatio: '1', background: 'var(--surface-3)', borderRadius: 6, border: '1.5px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, color: 'rgba(255,255,255,0.3)' }}>+</div>
         </div>
-
-        <div className="dasho-node__divider" />
 
         <div className="dasho-node__param">
-          <label>Вход</label>
-          <span style={{ fontVariantNumeric: 'tabular-nums', fontSize: 11, color: 'var(--text-primary)' }}>
-            {inMin} → {inMax}
-          </span>
-        </div>
-        <div className="dasho-node__param">
-          <label>Выход</label>
-          <span style={{ fontVariantNumeric: 'tabular-nums', fontSize: 11, color: 'var(--text-primary)' }}>
-            {outMin} → {outMax}
-          </span>
-        </div>
-
-        <div className="dasho-node__divider" />
-
-        <div className="dasho-node__param">
-          <label>Инверт</label>
-          <label className="dasho-toggle">
-            <input type="checkbox" defaultChecked={invert} />
-            <span>{invert ? 'вкл' : 'выкл'}</span>
-          </label>
-        </div>
-        <div className="dasho-node__param">
-          <label>Зажать</label>
-          <label className="dasho-toggle">
-            <input type="checkbox" defaultChecked={clamp} />
-            <span>{clamp ? 'вкл' : 'выкл'}</span>
-          </label>
-        </div>
-
-        <div className="dasho-node__divider" />
-
-        {/* Выход */}
-        <div className="dasho-node__socket-row" style={{ justifyContent: 'flex-end' }}>
-          <span>Результат</span>
-          <span className="dasho-node__socket-dot dasho-node__socket-dot--number" />
+          <span className="dasho-node__label">форма</span>
+          <select className="dasho-node__select">
+            <option>прямоугольник</option>
+            <option>трапеция</option>
+            <option>треугольник</option>
+          </select>
         </div>
       </div>
 
-      <Handle type="target" position={Position.Left}  id="value"
-        style={{ background: SOCKET_COLORS.number }} />
-      <Handle type="source" position={Position.Right} id="result"
-        style={{ background: SOCKET_COLORS.number }} />
+      <div className="dasho-node__socket-row">
+        <Handle type="target" position={Position.Left} id="value"
+          style={{ background: 'rgba(255,107,53,0.2)', borderColor: 'var(--wire-video)' }} />
+        <span className="dasho-node__socket-label">видео</span>
+      </div>
+      <div className="dasho-node__socket-row out" style={{ paddingBottom: 8 }}>
+        <span className="dasho-node__socket-label">поток</span>
+        <Handle type="source" position={Position.Right} id="result"
+          style={{ background: 'rgba(255,107,53,0.2)', borderColor: 'var(--wire-video)' }} />
+      </div>
     </div>
   )
 }
+

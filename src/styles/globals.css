@@ -1,50 +1,40 @@
 /* ─── DESIGN TOKENS ─────────────────────────────────────────────── */
 :root {
   /* Canvas */
-  --canvas-bg: #0c0c0e;
-  --canvas-dot: rgba(255,255,255,0.06);
+  --bg: #0e0e10;
+  --surface: #18181c;
+  --surface-2: #222228;
+  --surface-3: #2a2a32;
+  --border: rgba(255,255,255,0.08);
+  
+  --text: #f0f0f5;
+  --text-muted: #888899;
+  
+  --radius: 16px;
+  --radius-sm: 10px;
 
-  /* Node anatomy */
-  --node-bg:        #141416;
-  --node-bg-hover:  #1a1a1d;
-  --node-border:    rgba(255,255,255,0.08);
-  --node-border-active: rgba(255,255,255,0.22);
-  --node-radius:    10px;
-  --node-shadow:    0 8px 32px rgba(0,0,0,0.6), 0 1px 0 rgba(255,255,255,0.04) inset;
-  --node-shadow-selected: 0 0 0 2px var(--accent), 0 8px 32px rgba(0,0,0,0.7);
-  --node-min-width: 210px;
+  /* Categories */
+  --cat-sources: #ff6b35;
+  --cat-fx: #7c5cfc;
+  --cat-output: #00d084;
+  --cat-control: #ffbe0b;
+  --cat-ai: #ff3cac;
 
-  /* Header per category */
-  --header-source:    #1c1c22;   /* источники */
-  --header-analyse:   #1a1c1a;   /* анализ */
-  --header-effect:    #1c1a1c;   /* эффекты */
-  --header-control:   #1a1a1c;   /* управление */
-  --header-output:    #1c1a18;   /* вывод */
+  /* Sockets */
+  --wire-video: #ff6b35;
+  --wire-audio: #7c5cfc;
+  --wire-data:  #ffbe0b;
 
-  /* Accent (selected node glow) */
-  --accent: #5b6ef5;
-
-  /* Socket / wire colors */
-  --socket-video:   #3d9eff;   /* синий */
-  --socket-audio:   #4ade80;   /* зелёный */
-  --socket-number:  #facc15;   /* жёлтый */
-  --socket-trigger: #f87171;   /* красный */
-  --socket-point:   #c084fc;   /* фиолетовый */
-  --socket-state:   #fb923c;   /* оранжевый */
-
-  /* Text */
-  --text-primary:   #f0f0f2;
-  --text-secondary: #8a8a9a;
-  --text-dim:       #555560;
-
-  /* Controls */
-  --ctrl-bg:        #0e0e11;
-  --ctrl-border:    rgba(255,255,255,0.10);
-  --ctrl-border-focus: rgba(255,255,255,0.28);
-  --ctrl-radius:    5px;
+  /* React Flow Sockets mapping */
+  --socket-video:   var(--wire-video);
+  --socket-audio:   var(--wire-audio);
+  --socket-number:  var(--wire-data);
+  --socket-trigger: #f87171;
+  --socket-point:   #c084fc;
+  --socket-state:   #fb923c;
 
   /* UI */
-  --font: 'Inter', 'SF Pro Display', system-ui, sans-serif;
+  --font: "Cabinet Grotesk", sans-serif;
   --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
 }
 
@@ -52,28 +42,37 @@
 
 html, body, #root {
   width: 100%; height: 100%; overflow: hidden;
-  background: var(--canvas-bg);
+  background: var(--bg);
   font-family: var(--font);
+  color: var(--text);
   -webkit-font-smoothing: antialiased;
+  user-select: none;
 }
 
 /* React Flow overrides */
-.react-flow__renderer        { background: var(--canvas-bg); }
-.react-flow__background      { opacity: 1; }
-.react-flow__edge-path       { stroke-width: 1.5; }
-.react-flow__connection-path { stroke-width: 1.5; }
+.react-flow__renderer        { background: transparent; }
+.react-flow__background      { opacity: 1; pointer-events: none; }
+.react-flow__edge-path       { stroke-width: 6; opacity: 0.15; }
+.react-flow__connection-path { stroke-width: 2.5; stroke-linecap: round; }
+
+/* In prototype there are two paths, one thick faint, one thin solid. 
+We can only do one easily, or use a custom edge. 
+Let's use a 2.5px solid for now */
+.react-flow__edge-path {
+  stroke-width: 2.5;
+  opacity: 1;
+}
 
 /* Selection box */
 .react-flow__selection {
-  background: rgba(91,110,245,0.06);
-  border: 1px solid rgba(91,110,245,0.4);
+  background: rgba(124,92,252,0.06);
+  border: 1px solid rgba(124,92,252,0.4);
   border-radius: 4px;
 }
 
 /* Selected node ring */
 .react-flow__node.selected > .dasho-node {
-  border-color: var(--node-border-active);
-  box-shadow: var(--node-shadow-selected);
+  border-color: rgba(255,255,255,0.35);
 }
 
 /* Scrollbar */
@@ -81,3 +80,4 @@ html, body, #root {
 ::-webkit-scrollbar-track        { background: transparent; }
 ::-webkit-scrollbar-thumb        { background: #333; border-radius: 4px; }
 ::-webkit-scrollbar-thumb:hover  { background: #555; }
+

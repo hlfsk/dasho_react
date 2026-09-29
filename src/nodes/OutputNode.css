@@ -1,21 +1,21 @@
-/* Signal badge */
-.output-node__badge {
-  margin-left: auto;
-  font-size: 9px;
-  color: var(--socket-video);
-  animation: out-pulse 2s ease-in-out infinite;
-}
-@keyframes out-pulse { 0%,100%{opacity:1} 50%{opacity:0.2} }
-
 /* Preview */
 .output-node__preview {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 16 / 9;
-  background: #050505;
-  border-radius: 6px;
+  border-radius: 8px;
   overflow: hidden;
-  border: 1px solid rgba(255,255,255,0.05);
+  background: #000;
+  aspect-ratio: 16/9;
+  position: relative;
+  border: 1.5px solid rgba(0,208,132,0.3);
+  box-shadow: 0 0 20px rgba(0,208,132,0.1);
+}
+
+.output-screen-inner {
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg, #1a0a2e 0%, #0d0d20 50%, #001a10 100%);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px; font-weight: 700; color: rgba(0,208,132,0.4);
+  text-transform: uppercase; letter-spacing: 0.1em;
+  transition: opacity 200ms;
 }
 
 .output-node__canvas {
@@ -23,6 +23,13 @@
   height: 100%;
   object-fit: contain;
   display: block;
+  position: relative;
+  z-index: 1;
+}
+
+.output-resolution {
+  font-size: 9px; font-weight: 700; color: var(--text-muted);
+  display: flex; justify-content: space-between;
 }
 
 /* Fullscreen canvas — fills the container when in fullscreen */
@@ -33,20 +40,8 @@
   height: 100%;
   display: block;
   background: #000;
+  z-index: 5;
 }
-
-/* Placeholder when no signal */
-.output-node__placeholder {
-  position: absolute; inset: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  font-size: 11px;
-  color: var(--text-dim);
-}
-.output-node__placeholder span:first-child { font-size: 24px; opacity: 0.25; }
 
 /* Fullscreen exit button */
 .output-node__exit-btn {
@@ -63,24 +58,6 @@
   transition: background 0.15s;
 }
 .output-node__exit-btn:hover { background: rgba(0,0,0,0.85); }
-
-/* Fullscreen button */
-.output-node__fs-btn {
-  width: 100%;
-  justify-content: center;
-  text-align: center;
-  padding: 7px 12px;
-  font-size: 11px;
-  letter-spacing: 0.03em;
-}
-.output-node__fs-btn--active {
-  background: rgba(248,113,113,0.15);
-  border-color: rgba(248,113,113,0.35);
-  color: #f87171;
-}
-.output-node__fs-btn--active:hover {
-  background: rgba(248,113,113,0.25);
-}
 
 /* ── Fullscreen mode: preview fills screen */
 .output-node__preview:fullscreen,

@@ -1,65 +1,67 @@
 /* ═══════════════════════════════════════════════════════════════════
    DASHO NODE — base anatomy
-   All nodes use .dasho-node + .dasho-node__header + .dasho-node__body
 ═══════════════════════════════════════════════════════════════════ */
 
 .dasho-node {
-  background: var(--node-bg);
-  border: 1px solid var(--node-border);
-  border-radius: var(--node-radius);
-  min-width: var(--node-min-width);
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  min-width: 200px;
   font-family: var(--font);
-  font-size: 12px;
-  color: var(--text-primary);
-  box-shadow: var(--node-shadow);
-  transition: border-color 0.15s, box-shadow 0.15s;
+  color: var(--text);
+  box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+  transition: box-shadow 200ms ease, border-color 200ms ease;
   user-select: none;
+  cursor: grab;
 }
 
 .dasho-node:hover {
-  background: var(--node-bg-hover);
-  border-color: rgba(255,255,255,0.13);
+  border-color: rgba(255,255,255,0.18);
+  box-shadow: 0 8px 40px rgba(0,0,0,0.6);
+}
+
+.react-flow__node.selected > .dasho-node {
+  border-color: rgba(255,255,255,0.35);
 }
 
 /* ── HEADER ─────────────────────────────────────────────────────── */
 .dasho-node__header {
   display: flex;
   align-items: center;
-  gap: 7px;
-  padding: 9px 12px 8px;
-  background: var(--header-source);
-  border-bottom: 1px solid rgba(255,255,255,0.05);
-  border-radius: var(--node-radius) var(--node-radius) 0 0;
+  gap: 8px;
+  padding: 10px 12px 8px;
+  border-bottom: 1px solid var(--border);
 }
 
-/* category color overrides — add to parent node element */
-.dasho-node--source   .dasho-node__header { background: var(--header-source); }
-.dasho-node--analyse  .dasho-node__header { background: var(--header-analyse); }
-.dasho-node--effect   .dasho-node__header { background: var(--header-effect); }
-.dasho-node--control  .dasho-node__header { background: var(--header-control); }
-.dasho-node--output   .dasho-node__header { background: var(--header-output); }
-
 .dasho-node__icon {
-  font-size: 15px;
-  line-height: 1;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
   flex-shrink: 0;
 }
 
-.dasho-node__title {
-  font-weight: 600;
-  font-size: 11.5px;
-  color: var(--text-primary);
-  letter-spacing: 0.03em;
+.dasho-node__title-group {
+  display: flex;
+  flex-direction: column;
   flex: 1;
 }
 
-/* ── CATEGORY BADGE ─────────────────────────────────────────────── */
+.dasho-node__title {
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: -0.2px;
+}
+
 .dasho-node__cat {
   font-size: 9px;
-  font-weight: 500;
-  color: var(--text-dim);
-  letter-spacing: 0.08em;
+  font-weight: 700;
   text-transform: uppercase;
+  letter-spacing: 0.08em;
+  opacity: 0.6;
 }
 
 /* ── BODY ───────────────────────────────────────────────────────── */
@@ -67,72 +69,76 @@
   padding: 10px 12px;
   display: flex;
   flex-direction: column;
-  gap: 7px;
+  gap: 6px;
 }
 
 /* ── PARAM ROW ──────────────────────────────────────────────────── */
 .dasho-node__param {
   display: flex;
   align-items: center;
-  justify-content: space-between;
   gap: 8px;
 }
 
 .dasho-node__param label,
 .dasho-node__label {
-  color: var(--text-secondary);
-  font-size: 10.5px;
-  white-space: nowrap;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
   flex-shrink: 0;
+  min-width: 52px;
 }
 
-/* ── SOCKET ROW (label next to handle) ──────────────────────────── */
+/* ── SOCKET ROW ─────────────────────────────────────────────────── */
 .dasho-node__socket-row {
   display: flex;
   align-items: center;
   gap: 6px;
-  font-size: 10px;
-  color: var(--text-dim);
+  padding: 0 12px;
   position: relative;
 }
 
-.dasho-node__socket-dot {
-  width: 8px; height: 8px;
-  border-radius: 50%;
-  flex-shrink: 0;
+.dasho-node__socket-row.out {
+  justify-content: flex-end;
 }
-.dasho-node__socket-dot--video   { background: var(--socket-video); }
-.dasho-node__socket-dot--audio   { background: var(--socket-audio); }
-.dasho-node__socket-dot--number  { background: var(--socket-number); }
-.dasho-node__socket-dot--trigger { background: var(--socket-trigger); }
-.dasho-node__socket-dot--point   { background: var(--socket-point); }
-.dasho-node__socket-dot--state   { background: var(--socket-state); }
+
+.dasho-node__socket-row:not(.out) {
+  margin-left: -12px;
+}
+
+.dasho-node__socket-row.out {
+  margin-right: -12px;
+}
+
+.dasho-node__socket-label {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text-muted);
+}
 
 /* ── DIVIDER ────────────────────────────────────────────────────── */
 .dasho-node__divider {
   height: 1px;
-  background: rgba(255,255,255,0.05);
+  background: var(--border);
   margin: 2px 0;
 }
 
 /* ── CONTROLS ───────────────────────────────────────────────────── */
 .dasho-node__input,
 .dasho-node__select {
-  background: var(--ctrl-bg);
-  border: 1px solid var(--ctrl-border);
-  border-radius: var(--ctrl-radius);
-  color: var(--text-primary);
-  font-family: var(--font);
+  flex: 1;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  color: var(--text);
+  font-family: inherit;
   font-size: 11px;
-  padding: 4px 7px;
-  width: 118px;
+  font-weight: 600;
+  padding: 4px 8px;
+  cursor: pointer;
   outline: none;
-  transition: border-color 0.12s;
-}
-
-.dasho-node__input:focus,
-.dasho-node__select:focus {
-  border-color: var(--ctrl-border-focus);
+  width: auto;
 }
 
 .dasho-node__select option {
@@ -140,40 +146,55 @@
 }
 
 /* range slider */
+.dasho-node__slider-wrap {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
 input[type='range'].dasho-range {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 118px;
+  flex: 1;
   height: 3px;
-  background: #2a2a35;
-  border-radius: 3px;
-  outline: none;
+  border-radius: 2px;
+  appearance: none;
+  -webkit-appearance: none;
   cursor: pointer;
+  outline: none;
 }
 input[type='range'].dasho-range::-webkit-slider-thumb {
   -webkit-appearance: none;
-  width: 13px; height: 13px;
+  width: 14px;
+  height: 14px;
   border-radius: 50%;
-  background: var(--text-primary);
-  border: 2px solid #0c0c0e;
-  transition: transform 0.1s;
+  background: var(--text);
+  cursor: grab;
+  border: 2px solid var(--bg);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.4);
 }
-input[type='range'].dasho-range::-webkit-slider-thumb:hover { transform: scale(1.2); }
+
+.dasho-node__param-value {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text-muted);
+  min-width: 26px;
+  text-align: right;
+}
 
 /* number input (compact) */
 input[type='number'].dasho-number {
-  background: var(--ctrl-bg);
-  border: 1px solid var(--ctrl-border);
-  border-radius: var(--ctrl-radius);
-  color: var(--text-primary);
-  font-family: var(--font-mono);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  color: var(--text);
+  font-family: inherit;
   font-size: 11px;
+  font-weight: 600;
   padding: 3px 6px;
   width: 60px;
   outline: none;
   text-align: right;
 }
-input[type='number'].dasho-number:focus { border-color: var(--ctrl-border-focus); }
 
 /* toggle checkbox */
 .dasho-toggle {
@@ -181,82 +202,101 @@ input[type='number'].dasho-number:focus { border-color: var(--ctrl-border-focus)
   align-items: center;
   gap: 5px;
   cursor: pointer;
-  font-size: 10.5px;
-  color: var(--text-secondary);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text);
 }
 .dasho-toggle input[type='checkbox'] {
-  appearance: none; -webkit-appearance: none;
-  width: 28px; height: 15px;
-  background: #2a2a35;
-  border-radius: 8px;
+  appearance: none;
+  -webkit-appearance: none;
+  width: 28px;
+  height: 16px;
+  background: var(--surface-3);
+  border-radius: 100px;
+  border: 1px solid var(--border);
   cursor: pointer;
-  transition: background 0.18s;
+  transition: background 150ms ease;
   position: relative;
   flex-shrink: 0;
 }
 .dasho-toggle input[type='checkbox']::after {
   content: '';
   position: absolute;
-  top: 2px; left: 2px;
-  width: 11px; height: 11px;
-  background: #666;
+  top: 2px;
+  left: 2px;
+  width: 10px;
+  height: 10px;
+  background: #fff;
   border-radius: 50%;
-  transition: transform 0.18s, background 0.18s;
+  transition: transform 150ms ease;
 }
-.dasho-toggle input[type='checkbox']:checked { background: rgba(91,110,245,0.35); }
+.dasho-toggle input[type='checkbox']:checked {
+  background: var(--cat-output);
+  border-color: transparent;
+}
 .dasho-toggle input[type='checkbox']:checked::after {
-  transform: translateX(13px);
-  background: var(--accent);
+  transform: translateX(12px);
 }
 
 /* button */
 .dasho-btn {
-  background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(255,255,255,0.10);
-  border-radius: 5px;
-  color: var(--text-secondary);
-  font-family: var(--font);
-  font-size: 10.5px;
-  padding: 4px 10px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  font-family: inherit;
+  font-weight: 600;
+  font-size: 11px;
+  padding: 6px 12px;
   cursor: pointer;
-  transition: background 0.12s, color 0.12s, border-color 0.12s;
+  transition: background 0.12s, border-color 0.12s;
   white-space: nowrap;
 }
 .dasho-btn:hover {
-  background: rgba(255,255,255,0.09);
-  color: var(--text-primary);
-  border-color: rgba(255,255,255,0.18);
+  background: var(--surface-3);
 }
-.dasho-btn--primary {
-  background: rgba(91,110,245,0.2);
-  border-color: rgba(91,110,245,0.35);
-  color: #9aaaf8;
+
+/* Node statuses */
+.dasho-node__status {
+  font-size: 9px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  padding: 2px 7px;
+  border-radius: 100px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
 }
-.dasho-btn--primary:hover {
-  background: rgba(91,110,245,0.3);
-  border-color: rgba(91,110,245,0.5);
-  color: #bbc5fb;
+.status-idle {
+  background: rgba(255,255,255,0.06);
+  color: var(--text-muted);
 }
-.dasho-btn--danger {
-  border-color: rgba(248,113,113,0.3);
-  color: #f87171;
+.status-live {
+  background: rgba(0,208,132,0.15);
+  color: var(--cat-output);
 }
-.dasho-btn--danger:hover {
-  background: rgba(248,113,113,0.1);
-  border-color: rgba(248,113,113,0.5);
+.status-live::before {
+  content: "";
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--cat-output);
+  animation: pulse 1.5s ease infinite;
 }
 
 /* ── REACT FLOW HANDLES (sockets) ───────────────────────────────── */
 .react-flow__handle {
-  width: 10px !important;
-  height: 10px !important;
+  width: 12px !important;
+  height: 12px !important;
   border-radius: 50% !important;
-  border: 2px solid var(--node-bg) !important;
-  transition: transform 0.12s, box-shadow 0.12s;
+  border: 2px solid currentColor !important;
+  background: rgba(255,255,255,0.1) !important;
+  transition: transform 150ms ease !important;
+  cursor: crosshair !important;
 }
 .react-flow__handle:hover {
-  transform: scale(1.35);
-  box-shadow: 0 0 0 3px rgba(255,255,255,0.12);
+  transform: scale(1.4) !important;
 }
 .react-flow__handle-left  { left:  -6px !important; }
 .react-flow__handle-right { right: -6px !important; }
