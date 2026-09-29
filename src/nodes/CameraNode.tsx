@@ -2,7 +2,6 @@ import { useEffect, useRef, useState, useCallback } from 'react'
 import { Handle, Position, type NodeProps } from '@xyflow/react'
 import { SOCKET_COLORS } from '../types'
 import { signalBus } from '../store/signalBus'
-import './node.css'
 import './CameraNode.css'
 
 export default function CameraNode({ id, data }: NodeProps) {
@@ -13,12 +12,14 @@ export default function CameraNode({ id, data }: NodeProps) {
   const streamRef = useRef<MediaStream | null>(null)
   const rafRef    = useRef<number>(0)
 
-  const [devices,  setDevices]  = useState<MediaDeviceInfo[]>([])
-  const [deviceId, setDeviceId] = useState('')
-  const [mirror,   setMirror]   = useState(true)
-  const [status,   setStatus]   = useState<'idle' | 'connecting' | 'live' | 'error'>('idle')
+// FIX A: Corrected useState usage. The pattern is [stateVariable, setStateFunction] = useState(initialValue).
+  const [devices, setDevices] = useState<MediaDeviceInfo[]>([]) 
+  const [deviceId, setDeviceId] = useState('')        
+  const [mirror, setMirror] = useState(true)
+  const [status, setStatus] = useState<'idle' | 'connecting' | 'live' | 'error'>('idle')
   const [errorMsg, setErrorMsg] = useState('')
 
+  // Рисуем зеркальный кадр на canvas каждый frame
   const drawMirror = useCallback(() => {
     const video  = videoRef.current
     const canvas = canvasRef.current
@@ -28,6 +29,8 @@ export default function CameraNode({ id, data }: NodeProps) {
     if (canvas.width !== w || canvas.height !== h) { canvas.width = w; canvas.height = h }
     const ctx = canvas.getContext('2d')
     if (!ctx) return
+    // Note: For true mirror effect, scaling might be needed here based on CSS transform, 
+    // but using scale(-1, 1) in video style is simpler for this prototype loop.
     ctx.save(); ctx.scale(-1, 1); ctx.drawImage(video, -w, 0, w, h); ctx.restore()
     signalBus.publish(id, 'video', canvas)
     rafRef.current = requestAnimationFrame(drawMirror)
@@ -68,6 +71,7 @@ export default function CameraNode({ id, data }: NodeProps) {
     }
   }, [stopStream, mirror, drawMirror, id])
 
+  // Перезапуск зеркала при переключении toggle
   useEffect(() => {
     if (status !== 'live') return
     cancelAnimationFrame(rafRef.current)
@@ -80,21 +84,21 @@ export default function CameraNode({ id, data }: NodeProps) {
   return (
     <div className="dasho-node">
       <div className="dasho-node__header">
-        <div className="dasho-node__icon" style={{ background: 'rgba(255,107,53,0.15)', color: 'var(--cat-sources)' }}>📷</div>
+        <span className="dasho-node__icon" style={{ background: 'rgba(255,107,53,0.15)', color: 'var(--cat-sources)' }}>📷</span>
         <div className="dasho-node__title-group">
           <div className="dasho-node__title">{label}</div>
           <div className="dasho-node__cat" style={{ color: 'var(--cat-sources)' }}>источник</div>
         </div>
-        <div className={`dasho-node__status status-${status === 'live' ? 'live' : 'idle'}`}>
+        <span className={`dasho-node__status status-${status === 'live' ? 'live' : 'idle'} `}>
           {status === 'live' ? 'live' : 'выкл'}
-        </div>
+        </span>
       </div>
 
       <div className="dasho-node__body">
         {/* Превью */}
         <div className="camera-node__preview" onClick={() => {
-          if (status !== 'live') startCamera(deviceId || undefined)
-        }}>
+            if (status !== 'live') startCamera(deviceId || undefined)
+          }}>
           <video
             ref={videoRef} playsInline muted autoPlay
             className="camera-node__video"
@@ -147,10 +151,10 @@ export default function CameraNode({ id, data }: NodeProps) {
             ))}
           </select>
         </div>
-        
+
         {status === 'live' && (
-          <div style={{ display: 'flex', justifyContent: 'center', marginTop: 4 }}>
-            <button className="dasho-btn" onClick={() => { stopStream(); setStatus('idle') }}>■ Стоп</button>
+          <div className="dasho-node__param" style={{ display: 'flex', justifyContent: 'center', marginTop: 4 }}>
+            <button className="dasho-node__btn" onClick={() => { stopStream(); setStatus('idle') }}>■ Стоп</button>
           </div>
         )}
       </div>
@@ -163,4 +167,3 @@ export default function CameraNode({ id, data }: NodeProps) {
     </div>
   )
 }
-

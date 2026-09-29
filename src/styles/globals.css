@@ -1,83 +1,71 @@
-/* ─── DESIGN TOKENS ─────────────────────────────────────────────── */
+/* ─── DESIGN TOKENS (AV PERFORMANCE) ────────────────────────────── */
 :root {
   /* Canvas */
-  --bg: #0e0e10;
-  --surface: #18181c;
-  --surface-2: #222228;
-  --surface-3: #2a2a32;
-  --border: rgba(255,255,255,0.08);
+  --bg: #080117; /* Deeper background color */
+  --surface: #220a3e; /* Richer base node color */
+  --surface-2: #3b0569; /* Slightly lighter surface for depth */
+  --surface-3: #4f0d8c; /* Darkest, densest element background */
+  --border: rgba(124, 10, 221, 0.3); /* Deep purple border glow/translucency */
   
-  --text: #f0f0f5;
-  --text-muted: #888899;
+  --text: #eef5ff; /* Bright, ethereal text color */
+  --text-muted: #8c7aff; /* Muted lavender for secondary text */
   
   --radius: 16px;
-  --radius-sm: 10px;
+  --radius-sm: 9px;
 
-  /* Categories */
-  --cat-sources: #ff6b35;
-  --cat-fx: #7c5cfc;
-  --cat-output: #00d084;
-  --cat-control: #ffbe0b;
-  --cat-ai: #ff3cac;
+  /* Core Colors (The 'Magic') */
+  --cat-sources: #ff4d6d; /* Bright Rose/Red, for Input Sources */
+  --cat-fx: #7fb8ff; /* Electric Cyan, sharp and futuristic */
+  --cat-output: #0aff93; /* Neon Green, for final result */
+  --cat-control: #fcf45b; /* Electric Yellow/Gold, for parameters & logic */
+  --cat-ai: #a6ff82; /* Neo-Green, for Face/AI input */
 
-  /* Sockets */
-  --wire-video: #ff6b35;
-  --wire-audio: #7c5cfc;
-  --wire-data:  #ffbe0b;
+  /* Sockets (Wire Colors) */
+  --wire-video: #cc3d6d; 
+  --wire-audio: #7fb8ff;
+  --wire-data:  #fcf45b; 
 
-  /* React Flow Sockets mapping */
+  /* React Flow Sockets mapping - These are now more expressive! */
   --socket-video:   var(--wire-video);
   --socket-audio:   var(--wire-audio);
   --socket-number:  var(--wire-data);
-  --socket-trigger: #f87171;
-  --socket-point:   #c084fc;
-  --socket-state:   #fb923c;
+  --socket-trigger: #ff4d6d; 
+  --socket-point:   #a6ff82; /* Green for 'smart' points */
+  --socket-state:   #7fb8ff; 
 
-  /* UI */
+  /* UI Font stack is kept the same, but defined here */
   --font: "Cabinet Grotesk", sans-serif;
-  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 html, body, #root {
   width: 100%; height: 100%; overflow: hidden;
-  background: var(--bg);
+  background: radial-gradient(circle at 5% 90%, var(--surface) 8%, var(--bg) 70%); /* Soft glowing background */
   font-family: var(--font);
   color: var(--text);
   -webkit-font-smoothing: antialiased;
   user-select: none;
 }
 
-/* React Flow overrides */
+/* React Flow overrides (making sure our nodes look right) */
 .react-flow__renderer        { background: transparent; }
 .react-flow__background      { opacity: 1; pointer-events: none; }
-.react-flow__edge-path       { stroke-width: 6; opacity: 0.15; }
-.react-flow__connection-path { stroke-width: 2.5; stroke-linecap: round; }
+/* The edges will be defined in node.css for better control over glow/thickness */
 
-/* In prototype there are two paths, one thick faint, one thin solid. 
-We can only do one easily, or use a custom edge. 
-Let's use a 2.5px solid for now */
-.react-flow__edge-path {
-  stroke-width: 2.5;
-  opacity: 1;
-}
-
-/* Selection box */
+/* Selection box - now glowing slightly less, more subtle */
 .react-flow__selection {
-  background: rgba(124,92,252,0.06);
-  border: 1px solid rgba(124,92,252,0.4);
-  border-radius: 4px;
+  background: rgba(var(--border), 0.4);
+  border: 1px solid rgba(var(--text-muted), 0.5);
 }
 
-/* Selected node ring */
+/* Selected node ring (The glow effect) */
 .react-flow__node.selected > .dasho-node {
-  border-color: rgba(255,255,255,0.35);
+  box-shadow: 0 0 20px rgba(124, 10, 221, 0.8); /* Purple glow on selection */
 }
 
-/* Scrollbar */
-::-webkit-scrollbar              { width: 4px; height: 4px; }
-::-webkit-scrollbar-track        { background: transparent; }
-::-webkit-scrollbar-thumb        { background: #333; border-radius: 4px; }
-::-webkit-scrollbar-thumb:hover  { background: #555; }
-
+/* Scrollbar (A futuristic, controlled look) */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(124, 92, 252, 0.5); border-radius: 3px; box-shadow: 0 0 5px rgba(124, 92, 252, 0.5); }
+::-webkit-scrollbar-thumb:hover { background: #7c5cfc; box-shadow: 0 0 8px #7fb8ff; }

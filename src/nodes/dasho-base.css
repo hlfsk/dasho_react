@@ -1,0 +1,127 @@
+/* ═══════════════════════════════════════════════════════════════════
+   DASHO NODE - AESTHETIC ANATOMY V2: THE PREMIUM UI overhaul
+═══════════════════════════════════════════════════════════════════ */
+
+@import '../styles/globals.css'; 
+
+.dasho-node {
+  /* Base style moved to variables, now we focus on texture and glow */
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  min-width: 200px;
+  font-family: var(--font); /* Use the defined font! */
+  color: var(--text);
+  /* Subtle shadow for floating effect */
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3), 0 0 5px rgba(var(--cat-fx), 0.2) inset;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  user-select: none;
+  cursor: grab;
+}
+
+.dasho-node:hover {
+  /* Subtle glow and lift */
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5), 0 0 12px rgba(var(--cat-fx), 0.4));
+}
+
+/* State selection ring glow */
+.react-flow__node.selected > .dasho-node {
+  box-shadow: 0 0 30px rgba(var(--text-muted), 0.8); /* Big, gentle light border */
+}
+
+
+/* ── HEADER (Information Band) ────────────────────────────────────── */
+.dasho-node__header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border-bottom: 2px solid var(--border); /* Stronger divider line */
+}
+
+.dasho-node__icon {
+  width: 36px; height: 36px;
+  font-size: 18px;
+  z-text-shadow: 0 0 5px currentColor; /* Adding glow to icons */
+}
+.dasho-node__title-group { flex: 1; }
+
+.dasho-node__title {
+  font-size: 14px;
+  font-weight: 900; /* Bolder titling */
+  letter-spacing: -0.3px;
+}
+
+/* Category strip - more defined visual role */
+.dasho-node__cat {
+  margin-top: 2px;
+  display: block;
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-muted);
+}
+
+/* ── BODY (Control Panel) ──────────────────────────────────────── */
+.dasho-node__body {
+  padding: 8px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px; /* Increased gap for better organization */
+}
+
+/* PARAM ROW style consistency */
+.dasho-node__param, .dasho-node__input-display {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.dasho-node__label {
+  font-size: 10px;
+  font-weight: 600;
+  /* Color switched from muted gray to controlled text color */
+  color: var(--text-muted); 
+  min-width: 52px;
+}
+
+/* Range slider enhancement - making the thumb look high quality */
+input[type='range'].dasho-range {
+  height: 4px;
+  border-radius: 3px;
+  appearance: none;
+}
+input[type='range'].dasho-range::-webkit-slider-thumb {
+  width: 16px;
+  height: 16px;
+  background: var(--text); /* Bright thumb */
+  cursor: grab;
+  border: 3px solid var(--surface); /* Shadow/depth border */
+}
+
+/* Node statuses (Emphasizing the magic) */
+.dasho-node__status {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  padding: 3px 8px;
+}
+
+/* ── SOCKET ROW (Connectors) ──────────────────────────────────── */
+.dasho-node__socket-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.dasho-node__socket-label {
+  font-size: 10px;
+  color: var(--text-muted);
+}
+
+/* General socket ring glow/depth */
+.react-flow__handle {
+  background: rgba(var(--surface), 0.2) !important; /* Base color based on surface */
+  box-shadow: 0 0 5px currentColor; /* Subtle connection glow */
+}

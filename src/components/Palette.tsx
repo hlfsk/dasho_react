@@ -3,19 +3,26 @@ import { useReactFlow, Panel } from '@xyflow/react'
 import './Palette.css'
 
 const BUTTONS = [
-  { icon: '📷', tooltip: 'Камера', type: 'camera' },
-  { icon: '🌈', tooltip: 'Градиент', type: 'gradient' },
+  { icon: '📷', tooltip: 'Камера (Источник)', type: 'camera' }, 
+  { icon: '🌈', tooltip: 'Градиент (Начало)', type: 'gradient' },
   { icon: '🔤', tooltip: 'Текст', type: 'text' },
-  { icon: '🔲', tooltip: 'Управление', type: 'mapping' },
-  { icon: '🖥️', tooltip: 'Вывод', type: 'output' },
+
+  // --- NEW CONTROL AND TRANSFORM NODES ---
+  { icon: '🔢', tooltip: 'Показать Значение', type: 'valueDisplay' }, 
+  { icon: '🪄', tooltip: 'Маппинг/Проец.', type: 'mapping' }, // Projection Mapper
+  { icon: '🎛️', tooltip: 'Управление телом/Событие', type: 'toggleBody' },
+
+  { icon: '🖥️', tooltip: 'Вывод (Проектор)', type: 'output'},
 ]
 
 export default function Palette() {
   const { addNodes, screenToFlowPosition } = useReactFlow()
 
   const addNode = useCallback((type: string, tooltip: string) => {
-    const cx = window.innerWidth  / 2
-    const cy = window.innerHeight / 2
+    // Using a placeholder location; in real app this would be dynamic
+    const cx = 50 + (Math.random() * 100); 
+    const cy = 50 + (Math.random() * 100);
+
     const position = screenToFlowPosition({ x: cx, y: cy })
     addNodes({
       id: `${type}-${Date.now()}`,

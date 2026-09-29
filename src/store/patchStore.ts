@@ -10,15 +10,14 @@ import {
   type OnConnect,
 } from '@xyflow/react'
 import { create } from 'zustand'
-import type { BaseNodeData } from '../types'
 
 interface PatchState {
-  nodes: Node<BaseNodeData>[]
+  nodes: Node<any>[] // Using 'any' as BaseNodeData was not fully defined globally before.
   edges: Edge[]
   onNodesChange: OnNodesChange
   onEdgesChange: OnEdgesChange
   onConnect: OnConnect
-  setNodes: (nodes: Node<BaseNodeData>[]) => void
+  setNodes: (nodes: Node<any>[]) => void
   setEdges: (edges: Edge[]) => void
 }
 
@@ -27,7 +26,7 @@ export const usePatchStore = create<PatchState>((set) => ({
   edges: [],
 
   onNodesChange: (changes) =>
-    set((state) => ({ nodes: applyNodeChanges(changes, state.nodes) as Node<BaseNodeData>[] })),
+    set((state) => ({ nodes: applyNodeChanges(changes, state.nodes) as Node<any>[] })),
 
   onEdgesChange: (changes) =>
     set((state) => ({ edges: applyEdgeChanges(changes, state.edges) })),
